@@ -162,30 +162,59 @@
 
     // -- Paste your Shadertoy code here:
 
-    void mainImage( out vec4 o, vec2 u )
+    vec3 palette(float t) {
+    // Color Palette
+    vec3 a = vec3(0.541,0.541,0.541);
+    vec3 b = vec3(0.431,0.431,0.431);
+    vec3 c = vec3(1.0,1.0,1.0);
+    vec3 d = vec3(0.871,1.000,0.522);
+    
+    return a + b*cos(6.58318*(c*t+d));
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-    vec2 v = iResolution.xy;
-         u = .2*(u+u-v)/v.y;    
-         
-    vec4 z = o = vec4(1,2,3,0);
-     
-    for (float a = .5, t = iTime, i; 
-         ++i < 19.; 
-         o += (1. + cos(z+t)) 
-            / length((1.+i*dot(v,v)) 
-                   * sin(1.5*u/(.5-dot(u,u)) - 9.*u.yx + t))
-         )  
-        v = cos(++t - 7.*u*pow(a += .03, i)) - 5.*u, 
-        // use stanh here if shader has black artifacts
-        //   vvvv
-        u += tanh(40. * dot(u *= mat2(cos(i + .02*t - vec4(0,11,33,0)))
-                           ,u)
-                      * cos(1e2*u.yx + t)) / 2e2
-           + .2 * a * u
-           + cos(4./exp(dot(o,o)/1e2) + t) / 3e2;
-              
-     o = 25.6 / (min(o, 13.) + 164. / o) 
-       - dot(u, u) / 250.;
+    // To get resolution to 0 - 1 vs giving screen res.
+    // Also centers the fragmentation 
+    vec2 uv = (fragCoord * 2.1 - iResolution.xy) / iResolution.y;
+    
+    // Local scale to center of the actual screen
+    vec2 uv0 = uv;
+    
+    // FinalColor output (This calculation will allow for iterations)
+    vec3 finalColor = vec3(0.0);
+    
+    for(float i = .5; i < 4.5; i++) {
+   
+        // Scale UV's (resolution    
+        // Multiply it on the screen
+        // Subtract to center the resolution
+        uv = fract(uv * 1.5) - .5;
+
+
+        // This will repeat it
+        float d = length(uv) * exp(-length(uv0));
+
+        // This gives it color
+        // Use the local UV before broken up
+        vec3 col = palette(length(uv0) + i*.4 + iTime*.4);
+
+        // iTime introduces the animation
+        // sin*8.0 gives the sin pattern multiple time
+        d = sin(d*8.5 + iTime-.8)/12.5; // Example of circle sin
+        //d = abs(d);
+
+        // This finetunes how much glow u want
+        d = .005 / d;
+    
+       // d = smoothstep(0,0, CA d);
+        finalColor += col * d;
+        //col *= d;
+    }
+    
+    
+    
+    fragColor = vec4(finalColor, 1.0);
 }
 
 
