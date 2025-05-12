@@ -159,18 +159,59 @@
     uniform vec2  iResolution;
     uniform float iTime;
       
-void mainImage(out vec4 O, vec2 I)
+vec3 palette(float t) {
+    // Color Palette
+    vec3 a = vec3(0.541,0.541,0.541);
+    vec3 b = vec3(0.431,0.431,0.431);
+    vec3 c = vec3(1.0,1.0,1.0);
+    vec3 d = vec3(0.871,1.000,0.522);
+    
+    return a + b*cos(6.58318*(c*t+d));
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-    float i, z, d;
-    for(O *= i; i++<5e1;)
-    {
-        vec3 p = z*normalize(vec3(I+I,0)-iResolution.xyy),
-        v;
-        p.z -= iTime;
-        z += d = 1e-4+.5*length(max(v=cos(p)-sin(p).yzx,v.yzx*.2));
-        O.rgb += (cos(p)+1.2)/d;
+    // To get resolution to 0 - 1 vs giving screen res.
+    // Also centers the fragmentation 
+    vec2 uv = (fragCoord * 2.1 - iResolution.xy) / iResolution.y;
+    
+    // Local scale to center of the actual screen
+    vec2 uv0 = uv;
+    
+    // FinalColor output (This calculation will allow for iterations)
+    vec3 finalColor = vec3(0.0);
+    
+    for(float i = .5; i < 4.5; i++) {
+   
+        // Scale UV's (resolution    
+        // Multiply it on the screen
+        // Subtract to center the resolution
+        uv = fract(uv * 1.5) - .5;
+
+
+        // This will repeat it
+        float d = length(uv) * exp(-length(uv0));
+
+        // This gives it color
+        // Use the local UV before broken up
+        vec3 col = palette(length(uv0) + i*.4 + iTime*.4);
+
+        // iTime introduces the animation
+        // sin*8.0 gives the sin pattern multiple time
+        d = sin(d*8.5 + iTime-.8)/12.5; // Example of circle sin
+        //d = abs(d);
+
+        // This finetunes how much glow u want
+        d = .005 / d;
+    
+       // d = smoothstep(0,0, CA d);
+        finalColor += col * d;
+        //col *= d;
     }
-    O /= O + 1e3;
+    
+    
+    
+    fragColor = vec4(finalColor, 1.0);
 }
 </script>
 
