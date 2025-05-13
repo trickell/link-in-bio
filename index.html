@@ -2,6 +2,10 @@
 <html>
   <head>
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap');
+    </style>
+    <style>
 
       * {
         margin: 0 auto;
@@ -29,10 +33,6 @@
         font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
       }
 
-      a:hover {
-        text-decoration: underline;
-      }
-
       a > p {
         margin-left: 20px;
         margin-top: 15px;
@@ -49,8 +49,7 @@
       .pic > img {
         border-radius: 50px;
         margin-top: 20px;
-        border: 4px solid rgb(71, 1, 88);     
-        box-shadow: 0px 0px 10px 5px rgb(71, 1, 88);
+        border: 4px solid rgb(0, 132, 255);     
       }
 
        /* special text */
@@ -62,7 +61,8 @@
 
       .fa-brands {
         font-size: 40px;
-        color: rgb(54, 2, 85);
+        color: rgb(0, 132, 255);
+        
         padding: 10px;
       }
       
@@ -82,10 +82,10 @@
       }
 
       .nova-flat-regular {
-        font-family: "Nova Flat", serif;
-        font-weight: 600;
+        font-family: "Cal Sans", sans-serif;
+        font-weight: 300;
         font-style: normal;
-        background-image: radial-gradient(rgb(245, 146, 230), rgb(97, 169, 247));
+        background-image: radial-gradient(rgb(0, 204, 255), rgb(49, 0, 184));
         background-size: 100%;
         background-color: rbga(0,0,0,.7);
         background-clip: text;
@@ -113,6 +113,9 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        text-align: center;
+        align-items: center;
+        letter-spacing: 2px;
         background-color: black;
         color: white;
         padding: 15px;
@@ -122,8 +125,10 @@
       }
 
       .link:hover {
-        box-shadow: 0px 0px 10px 10px rgb(255, 255, 255);
-        box-shadow: inset 0px 0px 10px 10px rgb(255, 255, 255);
+        box-shadow: 0 0 20px 10px #fff, 0 0 60px 20px #f0f, 0 0 90px 30px #0ff;
+        text-decoration: none;
+        background-color: rgb(0, 19, 44);
+        /* box-shadow: inset 0px 0px 10px 10px rgb(255, 255, 255); */
       }
 
       .image {
@@ -134,12 +139,14 @@
       }
 
       .minib {
-        box-shadow: inset 0px 0px 10px 10px rgb(255, 255, 255);
+        box-shadow: 0 0 20px 10px #fff, 0 0 60px 20px #f0f, 0 0 90px 30px #0ff;
         padding: 20px 30px;
+        margin-bottom:50px;
         border-radius: 25px;
       }
       .neon-halo {
-        font-family: "Dosis", sans-serif;
+        font-family: "Tagesschrift", system-ui;
+        font-weight: 100;
         font-size: 2.5rem;
         color: #fff;
         background: #222;
@@ -183,12 +190,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     // FinalColor output (This calculation will allow for iterations)
     vec3 finalColor = vec3(0.0);
     
-    for(float i = .2; i < 4.5; i++) {
+    for(float i = .4; i < 3.5; i++) {
    
         // Scale UV's (resolution    
         // Multiply it on the screen
         // Subtract to center the resolution
-        uv = fract(uv * 1.15) - .5;
+        uv = fract(uv * 1.25) - .5;
 
 
         // This will repeat it
@@ -196,15 +203,43 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
         // This gives it color
         // Use the local UV before broken up
-        vec3 col = palette(length(uv0) + i*.4 + iTime*.4);
+        vec3 col = palette(length(uv0) + i*.8 + iTime*.5);
 
         // iTime introduces the animation
         // sin*8.0 gives the sin pattern multiple time
-        d = sin(d*4.5 + iTime-.8)/10.5; // Example of circle sin
+        d = sin(d*5.5 + iTime-.3)/5.9; // Example of circle sin
         d = abs(d);
 
         // This finetunes how much glow u want
-        d = .003 / d;
+        d = .008 / d;
+    
+        //d = smoothstep(0.0, 0.1, d);
+        finalColor += col * d;
+        //col *= d;
+    }
+
+     for(float i = .1; i < 1.5; i++) {
+   
+        // Scale UV's (resolution    
+        // Multiply it on the screen
+        // Subtract to center the resolution
+        uv = fract(uv * -1.25) - .5;
+
+
+        // This will repeat it
+        float d = length(uv) * exp(-length(uv0));
+
+        // This gives it color
+        // Use the local UV before broken up
+        vec3 col = palette(length(uv0) + i*.8 + iTime*.5);
+
+        // iTime introduces the animation
+        // sin*8.0 gives the sin pattern multiple time
+        d = sin(d*5.5 + iTime-.3)/-5.9; // Example of circle sin
+        d = abs(d);
+
+        // This finetunes how much glow u want
+        d = .008 / d;
     
         //d = smoothstep(0.0, 0.1, d);
         finalColor += col * d;
@@ -235,7 +270,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
       }
     });
   </script>
-</script>
 </head>
 
 <body>
@@ -244,7 +278,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     <img src="/thumbnails/web_logo_v1.png" alt="banner" height="300px"/>
   </div>
   
-  <h1 class="neon-halo minib">Click around. It's a mystery. So many cool places.</h1>
+  <h1 id="quote" class="neon-halo minib">Your Beautiful. Have an amazing day!</h1>
   
   <div class="everfluorescent">
       <div class="link">
@@ -254,17 +288,22 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
       <div class="link">
         <a class="biz" href="http://madtography.com" target="_blank">
-          <p class="nova-flat-regular">Photography Site</p></a>
+          <p class="nova-flat-regular">Photography WebSite</p></a>
       </div>
 
       <div class="link">
         <a class="biz" href="https://www.instagram.com/trickell/" target="_blank">
-        <p class="nova-flat-regular">Instagram</p></a>
+        <p class="nova-flat-regular">Instagram - Glass</p></a>
       </div>
 
       <div class="link">
-        <a class="biz" href="https://www.linkedin.com/in/jmadri/" target="_blank">
-        <p class="nova-flat-regular">John Madrigal</p></a>
+        <a class="biz" href="https://www.instagram.com/madtographymd/" target="_blank">
+        <p class="nova-flat-regular">Instagram - Photography</p></a>
+      </div>
+
+      <div class="link">
+        <a class="biz" href="https://www.madrigal.design" target="_blank">
+        <p class="nova-flat-regular">John Madrigal - Main Page</p></a>
             <div>
       <div class="socials">
         <a href="https://github.com/trickell/" target="_blank"><i class="fa-brands fa-github"></i></a>
@@ -276,5 +315,24 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     </div>
     
   </body>
-  
+  <script>
+    <!-- This will choose each quote randomly and insert it in each time someone visits the page -->
+    var quotes = [
+      "You are beautiful. Have an amazing day!",
+      "You are amazing. Have an wonderful day!",
+      "You are loved. Have an lovely day!",
+      "You are unique. Have an weird and unique day!",
+      "You are special. Have an beauitiful day!",
+      "You are a gift to the world.",
+      "You are worthy of love and respect.",
+      "You are capable of achieving great things.",
+      "You are enough just as you are.",
+      "You are a work of art."
+    ];
+    var randomIndex = Math.floor(Math.random() * quotes.length);
+    var randomQuote = quotes[randomIndex];
+    var quoteElement = document.getElementsByClassName("neon-halo");
+    console.log(quoteElement);
+    quoteElement[0].innerText = randomQuote;
+  </script>
 </html>
